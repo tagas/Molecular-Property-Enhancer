@@ -1,0 +1,11 @@
+# train for small molecules; SELFIES in seq_col
+python run_propen.py --property pIC50 --property_th 0.3 --same_epitope_threshold 25 --heavy_light 0 --input_file s3://prescient-data-dev/sandbox/tagasovn/propen_tmem.csv --epochs 3 --batch_size 32 --tokenizer sm_seq_toks
+
+# train for SNIPRs and Antibodies; AA sequence in seq_col
+python run_propen.py --property Corrected_Activation --property_th 1 --same_epitope_threshold 25 --heavy_light 0 --input_file /home/tagasovn/SNIPRs/data/all_snipers_aligned.csv --epochs 300 --batch_size 32 --tokenizer protein_seq_toks
+
+# train propen for mcp; custom_token in seq_col
+python run_propen.py --property Normalized --property_th 0.1 --same_epitope_threshold 3 --heavy_light 0 --input_file s3://prescient-data-dev/sandbox/tagasovn/propen_mcp_r2.csv --epochs 200 --batch_size 32 --tokenizer mcp_seq_toks 
+
+# train propen for rna cytotox; custom_token in seq_col
+python run_propen.py --property y_raw_neg --property_th 5 --same_epitope_threshold 3 --heavy_light 0 --input_file s3://prescient-data-dev/sandbox/tagasovn/propen_rna_one_base.csv --epochs 200 --batch_size 32 --tokenizer rna_seq_toks 
