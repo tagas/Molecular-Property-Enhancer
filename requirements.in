@@ -1,0 +1,8 @@
+pandas
+numpy
+tqdm
+wandb
+biopython
+torch>=2.1.0,<3
+pytorch-lightning
+Levenshtein

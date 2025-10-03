@@ -1,0 +1,39 @@
+.rules-propen-commit:
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_EVENT_TYPE != "merge_train" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+    changes:
+      - propen/**/*
+
+propen lint:
+  extends:
+    - .rules-propen-commit
+  stage: test
+  needs: []
+  image: python:3.10
+  script:
+    - pip install pre-commit
+    - pre-commit run --files propen/**/*
+  tags:
+    - cache
+    - amd64
+
+
+propen unit:
+  extends:
+    - .rules-propen-commit
+  stage: test
+  image: python:3.10
+  script:
+    - pip install -e "./prescient"
+    - pip install -e "./propen"
+    - pip install pytest pytest-cov
+    - python -m pytest --cov-report=term-missing --cov-report=xml:$CI_PROJECT_DIR/coverage_propen_unit.xml --cov=propen --ignore=propen/tests/deployment/ propen/tests -vv
+  tags:
+    - cache
+    - amd64
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: $CI_PROJECT_DIR/coverage_propen_unit.xml

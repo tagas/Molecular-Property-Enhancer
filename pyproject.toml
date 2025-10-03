@@ -1,0 +1,21 @@
+[project]
+name = "propen"
+requires-python = ">=3.9"
+dynamic = ["dependencies", "readme"]
+version="1.0"
+
+[build-system]
+requires = ["setuptools >= 65", "setuptools_scm[toml]>=6.2"]
+build-backend = 'setuptools.build_meta'
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.in"]}
+readme = {file = "README.md"}
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# pyflakes, pycodestyle, isort
+select = ["F", "E", "W", "I001"]

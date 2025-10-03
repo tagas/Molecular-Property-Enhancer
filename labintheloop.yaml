@@ -1,0 +1,75 @@
+requirements_file: propen/requirements.in
+conda_env: null
+custom_dockerfile: null
+
+
+deployments:
+- name: propen
+  display_name: ✨ Property Enhancer
+  description: You can use this method to optimize any property of an antibody. Propen
+    works by pairing similar sequences based on your defined criteria. You can set
+    the similarity using the `same_epitope_threshold` parameter and define the desired
+    difference in property value by `property_th`. For example, if you want designs
+    to have a maximum edit distance of 10 from each other and require a minimum improvement
+    of 0.5 in the property, you can configure these settings accordingly. Simply provide
+    a file containing a dataframe with columns for the AHO representation of your
+    sequences (minimum of 50), including both heavy and light chains, and the property
+    you want to optimize.
+  reference: https://arxiv.org/abs/2405.18075
+  model_type: generative
+  function: propen.deployment.propen.deployment_function
+  config: propen.deployment.propen.DeploymentConfig
+  test: propen/tests/deployment/
+  input: [fv_heavy_aho, fv_light_aho]
+  output: [fv_heavy, fv_light, edist_seed]
+  parameters:
+    property:
+      default: null
+      description: Property name (must be a column in the input file, required)
+      type: str
+      nullable: false
+    property_th:
+      default: 3.0
+      description: Threshold for maximum difference in property value between paired sequences
+      type: float
+      nullable: false
+    same_epitope_threshold:
+      default: 10
+      description: Threshold for maximum edit distance between paired sequence
+      type: int
+      nullable: false
+    output_dirpath:
+      default: s3://prescient-data-dev/bolt/outputs/propen/my_run
+      description: S3 path to save checkpoints and paired data
+      type: str
+      nullable: false
+    epochs:
+      default: 300
+      description: Number of epochs to train the model
+      type: int
+      nullable: false
+    n_samples:
+      default: 15
+      description: Number of samples to generate
+      type: int
+      nullable: false
+    temps:
+      default: "1"
+      description: Temperature settings for sampling (comma separated list of temperatures, 1 is no temp scaling, any float >0.0 scales the multinomial sampling from the last layer)
+      type: str
+      nullable: false
+    heavy_light:
+      default: 1
+      description: If 1, the model will take both heavy and light chains, else just heavy chain
+      type: int
+      nullable: false
+    max_iter:
+      default: 5
+      description: Maximum number of iterations during sampling
+      type: int
+      nullable: false
+  resources:
+    gpu: 1
+    cpu: 1
+    memory: 10Gi
+    node_group: gpu-p3_8xlarge
